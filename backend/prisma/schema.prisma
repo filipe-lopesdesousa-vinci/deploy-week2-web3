@@ -15,3 +15,4 @@ model Expense {
   payer       String
   amount      Float
 }
+
