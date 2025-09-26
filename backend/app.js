@@ -19,5 +19,13 @@ app.use(
 
 app.use('/api/expenses', expensesRouter);
 
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  const { PrismaClient } = require('./generated/prisma');
+  const prisma = new PrismaClient();
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
 module.exports = app;
 

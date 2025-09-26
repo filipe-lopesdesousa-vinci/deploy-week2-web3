@@ -2,22 +2,13 @@ const { PrismaClient } = require('../generated/prisma');
 
 const prisma = new PrismaClient();
 
-const queryDatabaseAndDisconnect = (operation) => {
-  return operation().finally(() => {
-    prisma.$disconnect();
-  });
-};
-
+// Remove the disconnect wrapper for now
 function getAllExpenses() {
-  const operation = () => prisma.expense.findMany();
-  const expenses = queryDatabaseAndDisconnect(operation);
-  console.log(expenses);
-  return expenses;
+  return prisma.expense.findMany();
 }
 
 function addExpense(expense) {
-  const operation = () => prisma.expense.create({ data: expense });
-  return queryDatabaseAndDisconnect(operation);
+  return prisma.expense.create({ data: expense });
 }
 
 const INITIAL_DATA = [
@@ -26,13 +17,10 @@ const INITIAL_DATA = [
   { date: '2025-01-15T00:00:00Z', description: 'Example expense #3 from Alice', payer: 'Alice', amount: 2 },
 ];
 
-function resetExpenses() {
-  const operation = async () => {
-    await prisma.expense.deleteMany({});
-    await prisma.expense.createMany({ data: INITIAL_DATA });
-    return prisma.expense.findMany();
-  };
-  return queryDatabaseAndDisconnect(operation);
+async function resetExpenses() {
+  await prisma.expense.deleteMany({});
+  await prisma.expense.createMany({ data: INITIAL_DATA });
+  return prisma.expense.findMany();
 }
 
 module.exports = {
